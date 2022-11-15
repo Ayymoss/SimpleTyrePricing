@@ -2,6 +2,7 @@
 
 namespace SimpleTyrePricing;
 
+[Delimiter(";")]
 public class PriceMatchResult
 {
     public bool NeedsAdjusting { get; private init; }
@@ -11,13 +12,15 @@ public class PriceMatchResult
     public decimal PriceAdjusted { get; private init; }
     public CountryIsoCode CountryIsoCode { get; private init; }
 
-    public static IEnumerable<PriceMatchResult> FromFormatIn(IEnumerable<PriceMatchModel> records, IEnumerable<BuyModel> buyModels)
+    public static IEnumerable<PriceMatchResult> FromFormatIn(IEnumerable<PriceMatchModel> records,
+        IEnumerable<BuyModel> buyModels)
     {
         const decimal adjustedPriceStepSize = 0.25m;
 
         return (from record in records
             let priceAdjusted = record.RankNumber != 1
-                ? record.YourPrice - (record.YourPriceInclTransport - record.CheapestPriceWithTransport) - adjustedPriceStepSize
+                ? record.YourPrice - (record.YourPriceInclTransport - record.CheapestPriceWithTransport) -
+                  adjustedPriceStepSize
                 : 0
             let buyModelRecord = buyModels.Where(x => x.ProductCode == record.YourProductCode).ToList()
             from buyRecord in buyModelRecord
@@ -35,6 +38,7 @@ public class PriceMatchResult
     }
 }
 
+[Delimiter(",")]
 public class PriceMatchModel
 {
     public string? Brand { get; set; }
@@ -56,6 +60,7 @@ public class PriceMatchModel
     public CountryIsoCode CountryIsoCode { get; set; }
 }
 
+[Delimiter(";")]
 public class BuyModel
 {
     public string? ProductCode { get; set; }
