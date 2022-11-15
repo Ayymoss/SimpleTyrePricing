@@ -9,12 +9,20 @@ public static class SimpleTyrePricing
     public static void Main()
     {
         var folderPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName);
-        Directory.CreateDirectory(Path.Join(folderPath, "Input"));
-        Directory.CreateDirectory(Path.Join(folderPath, "Output"));
+        if (!Directory.Exists(Path.Join(folderPath, "Input")))
+        {
+            Directory.CreateDirectory(Path.Join(folderPath, "Input"));
+            Directory.CreateDirectory(Path.Join(folderPath, "Output"));
+            Console.WriteLine("Input and Output folders created. Please add your input file to the Input folder and run the program again.");
+            Console.WriteLine("Press any key to exit.");
+            Console.ReadKey();
+            Environment.Exit(1);
+        }
+
         if (folderPath is null) throw new Exception("Could not find folder path");
-        
+
         var workingPath = Path.Join(folderPath, "Input");
-        
+
         var directory = new DirectoryInfo(workingPath);
         var priceMatchModel = new List<PriceMatchModel>();
         var buyModel = new List<BuyModel>();
@@ -46,5 +54,7 @@ public static class SimpleTyrePricing
         using var writer = new StreamWriter(Path.Join(folderPath, "Output", "output.csv"));
         using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
         csvWriter.WriteRecords(priceMatchResult);
+        Console.WriteLine("Magic complete. Press any key to exit.");
+        Console.ReadKey();
     }
 }
